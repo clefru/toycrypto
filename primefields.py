@@ -52,6 +52,8 @@ class Z(Field):
 
     def __init__(self, value, field):
       super(Z.Element, self).__init__(field)
+      if type(value) != int:
+        raise ValueError("value must be an int")
       self.value = value % field.order
 
     def __str__(self):
@@ -61,6 +63,8 @@ class Z(Field):
       return "%(v)x" % {'v': self.value, 's': self.field}
 
     def setValue(self, value):
+      if type(a) != int:
+        raise ValueError("setValue must take an int")
       self.value = value % self.field.order
       return self
 
