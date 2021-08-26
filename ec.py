@@ -1,7 +1,10 @@
 import base
 
 class EC(base.Group):
-  """Elliptic Curve Group."""
+  """Elliptic Curve Group.
+
+  y^2 = x^3 + a x + b
+  """
   def __init__(self, field, A, B):
     self.field = field
     self.A = A
@@ -109,12 +112,18 @@ class ECSubfield(base.Group):
     new_point = self.ec.plus(a.point, b.point)
     return self.Element(self, new_point)
 
+  def plusID(self):
+    return self.Element(self, self.ec.plusID())
+
   def __str__(self):
-    return "ECSubfield(%r, %r, %r)" % (self.ec, self.g, self.order)
+    return "ECSubfield(%r, %r, %x)" % (self.ec, self.g, self.order)
 
   def __repr__(self):
     return self.__str__()
 
+  # TODO: Either remove this class or remove it, as the subfield
+  # element is just an ellipitic curve field element, and users are
+  # likely to mix and match between those.
   class Element(base.Group.Element):
     def __init__(self, field, point):
       self.point = point
