@@ -22,7 +22,7 @@ class ZFieldTests(base_test.FieldTests):
     all_elements = [
         int(self.generator.scalarMul(i)) for i in range(0, self.field.order)
     ]
-    self.assertEqual(sorted(all_elements), range(0, self.field.order))
+    self.assertEqual(sorted(all_elements), list(range(0, self.field.order)))
 
   def xtestGFZ(self):
     z = Z(2)

@@ -57,7 +57,7 @@ class Group(Base):
         if n % 2:
           res = op(res, w)
         w = op(w, w)
-        n = n / 2
+        n = n // 2
       return res
 
     def scalarMul(self, scalar):

@@ -18,7 +18,7 @@ class Z(Field):
     if a.field == b.field:
       return self.Element(a.value + b.value, self)
     else:
-      raise Error, 'Trying to add ZElements from different Z classes'
+      raise ValueError('Trying to add ZElements from different Z classes')
 
   def mulID(self):
     return self.Element(1, self)
@@ -43,7 +43,7 @@ class Z(Field):
     raise ValueError("Unknown object type to make from: %s" % type(i))
 
   def enum(self, i):
-    return (self.Element(i % self.order, self), i / self.order)
+    return (self.Element(i % self.order, self), i // self.order)
 
   def __eq__(self, a):
     return type(self) == type(a) and self.order == a.order
@@ -87,7 +87,7 @@ class Z(Field):
       if self.field.order % 4 == 3:
         # The x^(p+1)/4 = x^2 trick seems to work for fields that have a p+1 divisible by 4.
         # FIXME: Find out why.
-        s = self.scalarPow((self.field.order + 1) / 4)
+        s = self.scalarPow((self.field.order + 1) // 4)
         if self.field.mul(s, s) == self:
           return s
         else:

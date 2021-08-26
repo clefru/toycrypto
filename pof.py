@@ -64,7 +64,7 @@ class POF(Field):
     reminder = dividend.clone()
     quotient = self.plusID()
 
-    while not (reminder.getDegree() < divisor.getDegree()):
+    while reminder.getDegree() is not None and reminder.getDegree() >= divisor.getDegree():
       xtimes = reminder.getDegree() - divisor.getDegree()
       q = self.field.mul(
           divisor.getCoefficient(divisor.getDegree()).mulInv(),
@@ -88,7 +88,7 @@ class POF(Field):
 
     def makeFromDict(d):
       pofi = self.Element(self)
-      for (k, v) in d.iteritems():
+      for (k, v) in d.items():
         pofi.setCoefficient(k, self.field.make(v))
       return pofi
 
@@ -143,11 +143,11 @@ class POF(Field):
                                  self.pof.field.plus(self.getCoefficient(n), i))
 
     def getDegree(self):
-      max = None
-      for k in self.c.keys():
-        if k > max:
-          max = k
-      return max
+      keys = self.c.keys()
+      if keys:
+        return max(keys)
+      else:
+        return None
 
     def nonZeroCoefficients(self):
       return self.c.keys()
@@ -161,8 +161,7 @@ class POF(Field):
     def __repr__(self):
       es = ""
       keys = self.c.keys()
-      keys.sort()
-      for k in keys:
+      for k in sorted(keys):
         cof = self.getCoefficient(k)
         if not cof.isMulID() or k == 0:
           es = es + cof.__str__()
@@ -174,6 +173,7 @@ class POF(Field):
       if es == "":
         return self.pof.field.plusID().__str__()
       else:
+        # Remove trailing plus
         return es[:-3]
 
     def clone(self):
