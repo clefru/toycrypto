@@ -1,11 +1,13 @@
 # Remove Field super-class as polynomials don't form a field.
 from base import *
 
+
 class POF(Field):
   """Implementation of a polynomial over an arbitrary field.
 
   POF=PolynomialOverField
   """
+
   def __init__(self, field):
     super(POF, self).__init__()
     self.field = field
@@ -22,9 +24,7 @@ class POF(Field):
     for k1 in a.nonZeroCoefficients():
       for k2 in b.nonZeroCoefficients():
         newp.addToCoefficient(
-          k1 + k2, self.field.mul(
-            a.getCoefficient(k1),
-            b.getCoefficient(k2)))
+            k1 + k2, self.field.mul(a.getCoefficient(k1), b.getCoefficient(k2)))
     return newp
 
   def longDiv(self, dividend, divisor):
@@ -66,15 +66,16 @@ class POF(Field):
 
     while not (reminder.getDegree() < divisor.getDegree()):
       xtimes = reminder.getDegree() - divisor.getDegree()
-      q = self.field.mul(divisor.getCoefficient(divisor.getDegree()).mulInv(),
-                         reminder.getCoefficient(reminder.getDegree()))
+      q = self.field.mul(
+          divisor.getCoefficient(divisor.getDegree()).mulInv(),
+          reminder.getCoefficient(reminder.getDegree()))
       # Accumulate coefficient in quotient.
       quotient.setCoefficient(xtimes, q)
       for k in divisor.nonZeroCoefficients():
         # Subtract shifted divisor polynomial
         reminder.addToCoefficient(
-          k + xtimes,
-          self.field.mul(divisor.getCoefficient(k), q).plusInv())
+            k + xtimes,
+            self.field.mul(divisor.getCoefficient(k), q).plusInv())
     return (quotient, reminder)
 
   def plusID(self):
@@ -84,18 +85,20 @@ class POF(Field):
     return self.make([self.field.mulID()])
 
   def make(self, x):
+
     def makeFromDict(d):
       pofi = self.Element(self)
-      for (k,v) in d.iteritems():
+      for (k, v) in d.iteritems():
         pofi.setCoefficient(k, self.field.make(v))
       return pofi
-        
+
     def makeFromList(lst):
       """Create polynomial from field coefficient list."""
       pofi = self.Element(self)
       for i in range(0, len(lst)):
         pofi.setCoefficient(i, self.field.make(lst[i]))
       return pofi
+
     def makeFromInt(i):
       res = self.Element(self)
       n = 0
@@ -104,6 +107,7 @@ class POF(Field):
         res.setCoefficient(n, c)
         n += 1
       return res
+
     if type(x) == int:
       return makeFromInt(x)
     if type(x) == list:
@@ -111,11 +115,12 @@ class POF(Field):
     if type(x) == dict:
       return makeFromDict(x)
     raise ValueError("Unknown object to make from.")
-  
+
   def __eq__(self, other):
     return type(self) == type(other) and self.field == other.field
-  
+
   class Element(Field.Element):
+
     def __init__(self, pof):
       super(POF.Element, self).__init__(pof)
       self.pof = pof
@@ -134,7 +139,8 @@ class POF(Field):
       return self.c.get(n, self.pof.field.plusID())
 
     def addToCoefficient(self, n, i):
-      return self.setCoefficient(n, self.pof.field.plus(self.getCoefficient(n), i))
+      return self.setCoefficient(n,
+                                 self.pof.field.plus(self.getCoefficient(n), i))
 
     def getDegree(self):
       max = None
@@ -158,11 +164,11 @@ class POF(Field):
       keys.sort()
       for k in keys:
         cof = self.getCoefficient(k)
-        if not cof.isMulID() or k == 0 :
+        if not cof.isMulID() or k == 0:
           es = es + cof.__str__()
-        if(k > 0):
+        if (k > 0):
           es = es + " x"
-          if(k > 1):
+          if (k > 1):
             es = es + "^" + k.__str__()
         es = es + " + "
       if es == "":
@@ -181,7 +187,8 @@ class POF(Field):
       return self.pof.make(dict((k + 1, v) for k, v in self.c.items()))
 
     def __eq__(self, other):
-      return type(self) == type(other) and self.pof == other.pof and self.c == other.c
+      return type(self) == type(
+          other) and self.pof == other.pof and self.c == other.c
 
     def toEL(self):
       """Get coefficient list in underlying field from polynomial."""

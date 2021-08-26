@@ -5,10 +5,12 @@ import unittest
 seed = 70
 random.seed(seed)
 
+
 class SignatureTests(unittest.TestCase):
+
   def test_generate_private_key(self):
     # Generate a bunch of private keys
-    for i in range(0,100):
+    for i in range(0, 100):
       Signature.gen_private_key()
 
   def test_sign_and_verify(self):
@@ -20,9 +22,9 @@ class SignatureTests(unittest.TestCase):
     pub_key = Signature.make_pub_key(priv_key)
     self.assertTrue(sig.verify(pub_key, e))
 
-    wrong_e = e - 1 
+    wrong_e = e - 1
     self.assertFalse(sig.verify(pub_key, wrong_e))
-    
+
     wrong_pub_key = Signature.make_pub_key(Signature.gen_private_key())
     self.assertFalse(sig.verify(wrong_pub_key, e))
 
@@ -35,7 +37,7 @@ class SignatureTests(unittest.TestCase):
     # FIXME, don't call secp256k1 directly but abstract clearly.
     pub_key_merged = secp256k1.plus(pub_key.plus(pub_key2))
     self.assertTrue(sig_merged.verify(pub_key_merged, e))
-    
-  
+
+
 if __name__ == '__main__':
-    unittest.main()
+  unittest.main()

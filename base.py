@@ -1,18 +1,21 @@
 import hashlib
 import binascii
 
+
 class Base(object):
-  
+
   def __repr__(self):
     raise NotImplementedError
 
   def __hash__(self):
     return int(binascii.hexlify(hashlib.sha256(str(self)).digest()), 16)
-  
+
   def __eq__(self, other):
     raise NotImplementedError
 
+
 class Group(Base):
+
   def plusID(self):
     raise NotImplementedError
 
@@ -29,6 +32,7 @@ class Group(Base):
     raise NotImplementedError
 
   class Element(Base):
+
     def __init__(self, field):
       self.field = field
 
@@ -53,7 +57,7 @@ class Group(Base):
         if n % 2:
           res = op(res, w)
         w = op(w, w)
-        n = n/2
+        n = n / 2
       return res
 
     def scalarMul(self, scalar):
@@ -65,6 +69,7 @@ class Group(Base):
 
 
 class Field(Group):
+
   def mulID(self):
     raise NotImplementedError
 
@@ -75,6 +80,7 @@ class Field(Group):
     raise NotImplementedError
 
   class Element(Group.Element):
+
     def __init__(self, field):
       self.field = field
 

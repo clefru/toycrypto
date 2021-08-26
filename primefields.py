@@ -1,7 +1,9 @@
 from base import *
 
+
 class Z(Field):
   """Implementation of the mathemical set Z/nZ."""
+
   def __init__(self, order):
     super(Z, self).__init__()
     self.order = order
@@ -34,28 +36,29 @@ class Z(Field):
     if type(i) == self.Element:
       # Copy and return new element in my field
       return self.Element(i.value, self)
-    
+
     if type(i) == int or type(i) == long:
       return self.Element(i, self)
-  
+
     raise ValueError("Unknown object type to make from: %s" % type(i))
 
   def enum(self, i):
-    return (self.Element(i % self.order, self), i/self.order)
+    return (self.Element(i % self.order, self), i / self.order)
 
   def __eq__(self, a):
     return type(self) == type(a) and self.order == a.order
 
   class Element(Field.Element):
+
     def __init__(self, value, field):
       super(Z.Element, self).__init__(field)
       self.value = value % field.order
 
     def __str__(self):
-      return "%(v)d" % {'v':self.value, 's':self.field }
+      return "%(v)d" % {'v': self.value, 's': self.field}
 
     def __repr__(self):
-      return "%(v)x" % {'v':self.value, 's':self.field }
+      return "%(v)x" % {'v': self.value, 's': self.field}
 
     def setValue(self, value):
       self.value = value % self.field.order
@@ -72,7 +75,7 @@ class Z(Field):
 
     def __eq__(self, a):
       return type(self) == type(a) and self.value == a.value
-    
+
     def __int__(self):
       return self.value
 
@@ -80,7 +83,7 @@ class Z(Field):
       if self.field.order % 4 == 3:
         # The x^(p+1)/4 = x^2 trick seems to work for fields that have a p+1 divisible by 4.
         # FIXME: Find out why.
-        s = self.scalarPow((self.field.order + 1)/4)
+        s = self.scalarPow((self.field.order + 1) / 4)
         if self.field.mul(s, s) == self:
           return s
         else:

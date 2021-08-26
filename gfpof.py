@@ -1,8 +1,10 @@
 import pof
 import base
 
+
 class GFPOF(pof.POF, base.Field):
   """Implementation of a Galois field."""
+
   def __init__(self, field, rp):
     # Field is coefficent field.
     super(GFPOF, self).__init__(field)
@@ -64,13 +66,11 @@ class GFPOF(pof.POF, base.Field):
       result = result.xtime()
       for a_p in a.nonZeroCoefficients():
         result.addToCoefficient(
-          a_p,
-          self.field.mul(b.getCoefficient(b_p),
-                         a.getCoefficient(a_p)))
+            a_p, self.field.mul(b.getCoefficient(b_p), a.getCoefficient(a_p)))
     return result
 
-
   class Element(pof.POF.Element):
+
     def __init__(self, pof):
       super(GFPOF.Element, self).__init__(pof)
       self.pof = pof
@@ -78,7 +78,9 @@ class GFPOF(pof.POF, base.Field):
 
     def setCoefficient(self, n, c):
       if n >= self.pof.rp.getDegree():
-        raise ValueError("can't set coefficient larger than the reduction polynomial's degree.")
+        raise ValueError(
+            "can't set coefficient larger than the reduction polynomial's degree."
+        )
       return super(GFPOF.Element, self).setCoefficient(n, c)
 
     def mulInv(self):
@@ -105,15 +107,16 @@ class GFPOF(pof.POF, base.Field):
 
       # Get the highest coefficient of the reduction polynomial, and
       # subtract the reduction polynomial a_n times from a.
-      a_n = self.getCoefficient(self.pof.rp.getDegree()-1)
+      a_n = self.getCoefficient(self.pof.rp.getDegree() - 1)
       for i in range(0, self.pof.rp.getDegree()):
         result.setCoefficient(
-          i,
-          self.pof.field.plus(
-            # Get plusID from the underlying field for the lowest
-            # coefficient
-            self.getCoefficient(i-1) if i else self.pof.field.plusID(),
-            self.pof.field.mul(a_n, self.pof.rp.getCoefficient(i)).plusInv()))
+            i,
+            self.pof.field.plus(
+                # Get plusID from the underlying field for the lowest
+                # coefficient
+                self.getCoefficient(i - 1) if i else self.pof.field.plusID(),
+                self.pof.field.mul(a_n,
+                                   self.pof.rp.getCoefficient(i)).plusInv()))
       return result
 
 
@@ -126,11 +129,11 @@ def ExtEuclidean(field, a, b):
   x1 = field.plusID()
   y0 = field.plusID()
   y1 = field.mulID()
-#  print "n1:",n1," n2:",n2," q:",q," r:",r
+  #  print "n1:",n1," n2:",n2," q:",q," r:",r
   while not r.isPlusID():
     n1 = n2
     n2 = r
-#    print "x1:", x1, "q:", q, "x0:", x0, "qx1: ", field.mul(q,x1)
+    #    print "x1:", x1, "q:", q, "x0:", x0, "qx1: ", field.mul(q,x1)
     x2 = field.plus(x0, (field.mul(q, x1).plusInv()))
     y2 = field.plus(y0, (field.mul(q, y1).plusInv()))
     x0 = x1
@@ -138,5 +141,7 @@ def ExtEuclidean(field, a, b):
     y0 = y1
     y1 = y2
     (q, r) = field.longDiv(n1, n2)
+
+
 #    print "n1:",n1," n2:",n2," q:",q," r:",r, " x2: ", x2 #, " y2:",y2
   return [n2, x1, y1]

@@ -7,7 +7,9 @@ Z2 = primefields.Z(2)
 Z5 = primefields.Z(5)
 Z17 = primefields.Z(17)
 
+
 class POFTests(base_tests.GroupTests):
+
   def setUp(self):
     self.field = POF(Z17)
     self.generator = self.field.make(5)
@@ -22,6 +24,7 @@ class POFTests(base_tests.GroupTests):
 
 
 class POFTest(unittest.TestCase):
+
   def testPOFInterface(self):
     POFZ5 = POF(Z5)
     a = POFZ5.plusID()
@@ -36,7 +39,7 @@ class POFTest(unittest.TestCase):
     a.setCoefficient(8, Z5.mulID())
     a.setCoefficient(13, Z5.mulID())
     # Assert correct coefficients.
-    
+
     self.assertEqual(a.getCoefficient(5), Z5.mulID())
     self.assertEqual(a.getCoefficient(8), Z5.mulID())
     self.assertEqual(a.getCoefficient(12), Z5.plusID())
@@ -52,7 +55,9 @@ class POFTest(unittest.TestCase):
     POFZ5 = POF(Z5)
     a = POFZ5.plusID().setCoefficient(1, primefields.Z.Element(1, Z5))
     x = a.scalarPow(4)
-    self.assertEqual(x, POFZ5.plusID().setCoefficient(4, primefields.Z.Element(1, Z5)))
+    self.assertEqual(
+        x,
+        POFZ5.plusID().setCoefficient(4, primefields.Z.Element(1, Z5)))
 
   def testFromInt(self):
     POFZ5 = POF(Z5)
@@ -60,7 +65,9 @@ class POFTest(unittest.TestCase):
     self.assertEqual(int(pol.getCoefficient(0)), 3)
     self.assertEqual(int(pol.getCoefficient(1)), 1)
 
-    self.assertEqual(POF(Z2).make([1, 1, 0, 1, 1, 0, 0, 0, 1]), POF(Z2).make(0x11b))
+    self.assertEqual(
+        POF(Z2).make([1, 1, 0, 1, 1, 0, 0, 0, 1]),
+        POF(Z2).make(0x11b))
 
   def testXtime(self):
     POFZ5 = POF(Z5)
@@ -88,12 +95,13 @@ class POFTest(unittest.TestCase):
     red = POFZ5.plusID()
     red.setCoefficient(3, Z5.make(2))
     red.setCoefficient(1, Z5.make(1))
+
+
 #    GFZ5 = GFPOF(Z5, red)
 #    x = GFZ5.mulID().xtime()
-    #print x.scalarPow(3)
-    #print GFZ5.mul(a, a)
-    #print POF(Z(2)).make(19)
+#print x.scalarPow(3)
+#print GFZ5.mul(a, a)
+#print POF(Z(2)).make(19)
 
 if __name__ == '__main__':
-    unittest.main()
-    
+  unittest.main()
