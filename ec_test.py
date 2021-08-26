@@ -30,7 +30,6 @@ class ECSubfieldTests(unittest.TestCase):
     x = 0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
     g = secp256k1.fromX(z.make(x))
     ecsf = ECSubfield(secp256k1, g, 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141)
-    print ecsf.make(404)
 
 if __name__ == '__main__':
   unittest.main()
