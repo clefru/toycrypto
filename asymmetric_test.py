@@ -34,8 +34,7 @@ class SignatureTests(unittest.TestCase):
     self.assertTrue(sig.verify(pub_key, e))
 
     sig_merged = Signature.merge(sig, sig2)
-    # FIXME, don't call secp256k1 directly but abstract clearly.
-    pub_key_merged = secp256k1.plus(pub_key.plus(pub_key2))
+    pub_key_merged = Signature.Hfield.ec.plus(pub_key, pub_key2)
     self.assertTrue(sig_merged.verify(pub_key_merged, e))
 
 

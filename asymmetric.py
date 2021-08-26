@@ -23,14 +23,14 @@ class Signature(collections.namedtuple("Signature", ["s", "K"])):
   def sign(cls, e, x):
     k = cls.gen_private_key()
     s = cls.nF.plus(k, cls.nF.mul(x, cls.nF.make(e)))
-    return Signature(s, cls.Hfield.make(int(k)).point)
+    return Signature(s, cls.Hfield.make(int(k)))
 
   @classmethod
   def merge(cls, s1, s2):
-    return Signature(cls.nF.plus(s1.s, s2.s), secp256k1.plus(s1.K, s2.K))
+    return Signature(cls.nF.plus(s1.s, s2.s), Signature.Hfield.ec.plus(s1.K, s2.K))
 
   def verify(self, pubKey, e):
-    S = Signature.Hfield.make(int(self.s)).point
+    S = Signature.Hfield.make(int(self.s))
     V = Signature.Hfield.ec.plus(self.K, pubKey.scalarMul(e))
     return S == V
 
@@ -40,4 +40,4 @@ class Signature(collections.namedtuple("Signature", ["s", "K"])):
 
   @classmethod
   def make_pub_key(cls, private_key):
-    return Signature.Hfield.make(int(private_key)).point
+    return Signature.Hfield.make(int(private_key))
