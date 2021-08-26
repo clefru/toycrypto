@@ -1,6 +1,6 @@
 from gfpof import *
 from pof import *
-import base_tests
+import base_test
 import unittest
 import primefields
 
@@ -50,7 +50,7 @@ def toBin(a):
 
 
 @unittest.skip("broken")
-class GFPOF_FieldTests(base_tests.FieldTests):
+class GFPOF_FieldTests(base_test.FieldTests):
   pass
 
 

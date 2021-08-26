@@ -1,6 +1,6 @@
 from pof import *
 import primefields
-import base_tests
+import base_test
 import unittest
 
 Z2 = primefields.Z(2)
@@ -8,7 +8,7 @@ Z5 = primefields.Z(5)
 Z17 = primefields.Z(17)
 
 
-class POFTests(base_tests.GroupTests):
+class POFTests(base_test.GroupTests):
 
   def setUp(self):
     self.field = POF(Z17)

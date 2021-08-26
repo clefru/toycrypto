@@ -1,10 +1,10 @@
 from primefields import *
-import base_tests
+import base_test
 import random
 import unittest
 
 
-class ZFieldTests(base_tests.FieldTests):
+class ZFieldTests(base_test.FieldTests):
 
   def setUp(self):
     raise unittest.SkipTest("superclass")
