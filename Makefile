@@ -1,6 +1,6 @@
 SRCS = asymmetric.py base.py ec.py gfpof.py pof.py primefields.py
 
-TESTS = asymmetric_tests.py base_tests.py gfpof_tests.py pof_tests.py primefields_test.py
+TESTS = asymmetric_test.py base_test.py gfpof_test.py pof_test.py primefields_test.py
 
 unittests:
 	for i in ${TESTS}; do python $$i; done
