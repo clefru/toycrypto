@@ -1,6 +1,6 @@
 # Remove Field super-class as polynomials don't form a field.
 from base import *
-
+from functools import reduce
 
 class POF(Field):
   """Implementation of a polynomial over an arbitrary field.
@@ -119,6 +119,9 @@ class POF(Field):
   def __eq__(self, other):
     return type(self) == type(other) and self.field == other.field
 
+  def __hash__(self):
+    return hash(self.field)
+
   class Element(Field.Element):
 
     def __init__(self, pof):
@@ -200,3 +203,9 @@ class POF(Field):
         res += self.getCoefficient(i)
         res *= self.field.getOrder()
       return res
+
+    def __hash__(self):
+      return reduce(
+        lambda x, h: hash((x, h)),
+        sorted(self.c.items()),
+        hash(self.pof))

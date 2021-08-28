@@ -100,6 +100,9 @@ class EC(base.Group):
       return type(self) == type(
           a) and self.field == a.field and self.x == a.x and self.y == a.y
 
+    def __hash__(self):
+      return hash((self.x, self.y))
+
 
 class ECSubfield(base.Group):
 

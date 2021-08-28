@@ -12,6 +12,9 @@ class GroupTests(unittest.TestCase):
     # Check commutativeness.
     self.assertEqual(self.generator.scalarMul(2).scalarMul(9), e18)
 
+  def test_hashability(self):
+    set([self.field.make(10)])
+
 
 class FieldTests(GroupTests):
 
