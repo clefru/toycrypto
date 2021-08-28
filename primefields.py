@@ -48,6 +48,9 @@ class Z(Field):
   def __eq__(self, a):
     return type(self) == type(a) and self.order == a.order
 
+  def __hash__(self):
+    return hash(self.order)
+
   class Element(Field.Element):
 
     def __init__(self, value, field):
@@ -95,3 +98,6 @@ class Z(Field):
       else:
         # Implement https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm here.
         raise ValueError("Unsupport sqrt")
+
+    def __hash__(self):
+      return hash((self.field, self.value))
