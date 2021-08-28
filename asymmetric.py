@@ -27,7 +27,8 @@ class Signature(collections.namedtuple("Signature", ["s", "K"])):
 
   @classmethod
   def merge(cls, s1, s2):
-    return Signature(cls.nF.plus(s1.s, s2.s), Signature.Hfield.ec.plus(s1.K, s2.K))
+    return Signature(cls.nF.plus(s1.s, s2.s),
+                     Signature.Hfield.ec.plus(s1.K, s2.K))
 
   def verify(self, pubKey, e):
     S = Signature.Hfield.make(int(self.s))
