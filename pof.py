@@ -64,7 +64,8 @@ class POF(Field):
     reminder = dividend.clone()
     quotient = self.plusID()
 
-    while reminder.getDegree() is not None and reminder.getDegree() >= divisor.getDegree():
+    while reminder.getDegree(
+    ) is not None and reminder.getDegree() >= divisor.getDegree():
       xtimes = reminder.getDegree() - divisor.getDegree()
       q = self.field.mul(
           divisor.getCoefficient(divisor.getDegree()).mulInv(),

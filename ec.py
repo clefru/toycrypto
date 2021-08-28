@@ -111,6 +111,9 @@ class ECSubfield(base.Group):
     self.g = g
     self.order = order
 
+  def plus(self, a, b):
+    return self.ec.plus(a, b)
+
   def make(self, n):
     # FIXME type
     return self.g.scalarMul(n)
