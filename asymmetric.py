@@ -7,16 +7,16 @@ from primefields import *
 p = 2**256 - 2**32 - 2**9 - 2**8 - 2**7 - 2**6 - 2**4 - 1
 z = Z(p)
 secp256k1 = EC(z, z.make(0), z.make(7))
+secp256k1_G = secp256k1.fromX(
+    z.make(0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798))
+secp256k1_GField = ECSubfield(
+    secp256k1, secp256k1_G,
+    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141)
 
 
 class Signature(collections.namedtuple("Signature", ["s", "K"])):
   """Schnorr signatures over secp256k1."""
-  H = secp256k1.fromX(
-      z.make(
-          0x79BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798))
-  Hfield = ECSubfield(
-      secp256k1, H,
-      0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141)
+  Hfield = secp256k1_GField
   nF = Z(Hfield.order)
 
   @classmethod
@@ -53,7 +53,8 @@ multiplies X with y and gets xyG. xyG is the shared secret now."""
 import hashlib
 
 
-class RingSignature(collections.namedtuple("RingSignature", ["xs", "m", "v"])):
+class RingSignatureRSA(
+    collections.namedtuple("RignSignatureRSA", ["xs", "m", "v"])):
 
   # E implements a simple 'encryption' method. Sadly it has no
   # decryption method.
@@ -98,8 +99,8 @@ class RingSignature(collections.namedtuple("RingSignature", ["xs", "m", "v"])):
   # invert the trapdoor function.
 
   def verify(self, m):
-    ys = map(RingSignature.trapdoor, self.xs)
-    v_ = RingSignature.C(sha256(m), ys, v)
+    ys = map(RignSignatureRSA.trapdoor, self.xs)
+    v_ = RignSignatureRSA.C(sha256(m), ys, v)
     return v_ == v
 
   # Signature construction:
@@ -167,6 +168,45 @@ class RingSignature(collections.namedtuple("RingSignature", ["xs", "m", "v"])):
     w_ = C(k, ys[randomInsertPoint:], v)
     y = w ^ w_
     x = trapdoor_invert(y)
-    return RingSignature(
+    return RignSignatureRSA(
+        other_xs[0:randomInsertPoint] + [my_x] + other_xs[randomInsertPoint:],
+        m, v)
+
+
+class RingSignatureEC(
+    collections.namedtuple("RignSignatureEC", ["xs", "m", "v"])):
+
+  @classmethod
+  def E(cls, k, v):
+    m = hashlib.sha256()
+    m.update(k)
+    m.update(v)
+    return m.digest()
+
+  @classmethod
+  def C(cls, k, ys, v):
+    for y in ys:
+      v = H(
+          k,
+          sec256p1k.plus(secp256k1_Hfield.make(ps[i - 1].r),
+                         ps[i].X.scalarmul(c)))
+    return v
+
+  def verify(self, m):
+    ys = map(RignSignatureRSA.trapdoor, self.xs)
+    v_ = RignSignatureRSA.C(sha256(m), ys, v)
+    return v_ == v
+
+  @classmethod
+  def sign(cls, myPubKey, otherPubKeys, m):
+    k = sha256(m)
+    ys = map(trapdoor, otherPubKeys)
+    randomInsertPoint = random(len(otherPubKeys))
+    w = random()
+    v = C(k, ys[0:randomInsertPoint], w)
+    w_ = C(k, ys[randomInsertPoint:], v)
+    y = w ^ w_
+    x = trapdoor_invert(y)
+    return RignSignatureRSA(
         other_xs[0:randomInsertPoint] + [my_x] + other_xs[randomInsertPoint:],
         m, v)
