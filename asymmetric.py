@@ -173,40 +173,28 @@ class RingSignatureRSA(
         m, v)
 
 
+# Implement SAG from
+# https://github.com/baro77/RingsCS/blob/main/RingsCheatsheet20210301.pdf
 class RingSignatureEC(
     collections.namedtuple("RignSignatureEC", ["xs", "m", "v"])):
 
   @classmethod
-  def E(cls, k, v):
+  def H(cls, k, v):
     m = hashlib.sha256()
     m.update(k)
     m.update(v)
     return m.digest()
 
-  @classmethod
-  def C(cls, k, ys, v):
+  def verify(self, m, v):
+    v_ = v
     for y in ys:
-      v = H(
+      v_ = H(
           k,
           sec256p1k.plus(secp256k1_Hfield.make(ps[i - 1].r),
                          ps[i].X.scalarmul(c)))
-    return v
-
-  def verify(self, m):
-    ys = map(RignSignatureRSA.trapdoor, self.xs)
-    v_ = RignSignatureRSA.C(sha256(m), ys, v)
-    return v_ == v
+    return v == v_
 
   @classmethod
   def sign(cls, myPubKey, otherPubKeys, m):
-    k = sha256(m)
-    ys = map(trapdoor, otherPubKeys)
-    randomInsertPoint = random(len(otherPubKeys))
-    w = random()
-    v = C(k, ys[0:randomInsertPoint], w)
-    w_ = C(k, ys[randomInsertPoint:], v)
-    y = w ^ w_
-    x = trapdoor_invert(y)
-    return RignSignatureRSA(
-        other_xs[0:randomInsertPoint] + [my_x] + other_xs[randomInsertPoint:],
-        m, v)
+    # TODO
+    pass
