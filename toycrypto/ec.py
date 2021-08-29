@@ -83,6 +83,7 @@ class EC(base.Group):
 
     def __init__(self, ec, x, y):
       # FIXME, verify that we are on the curve here.
+      super(EC.Element, self).__init__(ec)
       self.field = ec
       self.x = x
       self.y = y

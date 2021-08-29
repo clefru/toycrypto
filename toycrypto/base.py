@@ -5,7 +5,7 @@ from typing import TypeVar, Generic, Callable
 T = TypeVar('T')
 
 
-def opN(self, n: int, neutral: T, op: Callable[[T, T], T]) -> T:
+def opN(self: T, n: int, neutral: T, op: Callable[[T, T], T]) -> T:
   """Applies op(self, op(self, ... op(self, neutral))) n-times"""
 
   # Assuming a binary operator "op", we create the operator lambda a: op1(self, a). Then we apply
@@ -15,7 +15,7 @@ def opN(self, n: int, neutral: T, op: Callable[[T, T], T]) -> T:
 
   if n < 0:
     raise ValueError("Scalar %d can't be negative" % n)
-  f = self.field
+
   res = neutral
   # This variable will double every step and whenever we hit a "true"-bit add itself to res.
   w = self
@@ -46,15 +46,15 @@ class Group(Base):
 
   class Element(Base):
 
-    def __init__(self, field: 'Group'):
-      self.field = field
+    def __init__(self, group: 'Group'):
+      self.group = group
 
     def isPlusID(self) -> bool:
-      return self == self.field.plusID()
+      return self == self.group.plusID()
 
     def scalarMul(self, scalar: int) -> 'Group.Element':
       """Scalar multiplication"""
-      return opN(self, scalar, self.field.plusID(), self.field.plus)
+      return opN(self, scalar, self.group.plusID(), self.group.plus)
 
     def __eq__(self, other: object) -> bool:
       raise NotImplementedError
@@ -74,6 +74,7 @@ class Field(Group):
   class Element(Group.Element):
 
     def __init__(self, field: 'Field'):
+      super(Field.Element, self).__init__(field)
       self.field = field
 
     def isMulID(self) -> bool:
