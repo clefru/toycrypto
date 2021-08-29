@@ -2,6 +2,7 @@
 from base import *
 from functools import reduce
 
+
 class POF(Field):
   """Implementation of a polynomial over an arbitrary field.
 
@@ -206,7 +207,5 @@ class POF(Field):
       return res
 
     def __hash__(self):
-      return reduce(
-        lambda x, h: hash((x, h)),
-        sorted(self.c.items()),
-        hash(self.pof))
+      return reduce(lambda x, h: hash((x, h)), sorted(self.c.items()),
+                    hash(self.pof))
