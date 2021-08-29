@@ -1,5 +1,5 @@
-from pof import *
-import primefields
+from toycrypto.pof import *
+from toycrypto import primefields
 import base_test
 import unittest
 

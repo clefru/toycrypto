@@ -1,5 +1,5 @@
-import pof
-import base
+from toycrypto import pof
+from toycrypto import base
 
 
 class GFPOF(pof.POF, base.Field):

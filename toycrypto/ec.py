@@ -1,4 +1,4 @@
-import base
+from toycrypto import base
 
 
 class EC(base.Group):

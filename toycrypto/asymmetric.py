@@ -1,8 +1,8 @@
 import collections
 import random
 
-from ec import *
-from primefields import *
+from toycrypto.ec import *
+from toycrypto.primefields import *
 
 p = 2**256 - 2**32 - 2**9 - 2**8 - 2**7 - 2**6 - 2**4 - 1
 z = Z(p)

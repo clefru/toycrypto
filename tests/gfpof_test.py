@@ -1,8 +1,8 @@
-from gfpof import *
-from pof import *
+from toycrypto.gfpof import *
+from toycrypto.pof import *
 import base_test
 import unittest
-import primefields
+from toycrypto import primefields
 
 Z5 = primefields.Z(5)
 Z2 = primefields.Z(2)

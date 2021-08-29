@@ -1,6 +1,6 @@
-SRCS = asymmetric.py base.py ec.py gfpof.py pof.py primefields.py
+SRCS = toycrypto/asymmetric.py toycrypto/base.py toycrypto/ec.py toycrypto/gfpof.py toycrypto/pof.py toycrypto/primefields.py
 
-TESTS = asymmetric_test.py base_test.py gfpof_test.py pof_test.py primefields_test.py ec_test.py
+TESTS = tests/asymmetric_test.py tests/base_test.py tests/gfpof_test.py tests/pof_test.py tests/primefields_test.py tests/ec_test.py
 
 unittests:
 	for i in ${TESTS}; do python $$i; done

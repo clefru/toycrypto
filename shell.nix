@@ -6,6 +6,6 @@ let mypython = (python3.withPackages (ps: [
     ]));
 in pkgs.mkShell {
   buildInputs = [ mypython ];
+  # TODO: Fix this path. "" + ./. sadly stages the directory.
+  PYTHONPATH = "/home/clemens/devel/toycrypto";
 }
-
-

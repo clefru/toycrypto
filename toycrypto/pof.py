@@ -1,5 +1,5 @@
 # Remove Field super-class as polynomials don't form a field.
-from base import *
+from toycrypto.base import *
 from functools import reduce
 
 

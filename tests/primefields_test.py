@@ -1,4 +1,4 @@
-from primefields import *
+from toycrypto.primefields import *
 import base_test
 import random
 import unittest

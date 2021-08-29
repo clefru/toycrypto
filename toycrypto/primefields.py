@@ -1,4 +1,4 @@
-from base import *
+from toycrypto.base import *
 
 
 class Z(Field):

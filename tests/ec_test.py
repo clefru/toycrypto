@@ -1,7 +1,7 @@
-from ec import *
+from toycrypto.ec import *
 import unittest
 import base_test
-import primefields
+from toycrypto import primefields
 
 Z = primefields.Z
 

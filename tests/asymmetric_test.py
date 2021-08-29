@@ -1,4 +1,4 @@
-from asymmetric import *
+from toycrypto.asymmetric import *
 import unittest
 
 # Deterministic tests for the moment
