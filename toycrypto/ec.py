@@ -1,22 +1,24 @@
-from toycrypto import base
+from toycrypto.base import Field
+from toycrypto.base import Group
+from typing import Union, Optional
 
 
-class EC(base.Group):
+class EC(Group):
   """Elliptic Curve Group.
 
   y^2 = x^3 + a x + b
   """
 
-  def __init__(self, field, A, B):
+  def __init__(self, field: Field, A: 'Field.Element', B: 'Field.Element'):
     self.field = field
     self.A = A
     self.B = B
     self.O = EC.Element(self, None, None)
 
-  def __eq__(self, other):
+  def __eq__(self, other: object) -> bool:
     return self.field == other.field and self.A == other.A and self.B == other.B
 
-  def fromX(self, x):
+  def fromX(self, x: 'Field.Element') -> Optional['EC.Element']:
     y = self.field.plus(x.scalarPow(3),
                         self.field.plus(self.field.mul(self.A, x),
                                         self.B)).sqrt()
@@ -25,10 +27,10 @@ class EC(base.Group):
 
     return self.Element(self, x, y)
 
-  def plusID(self):
+  def plusID(self) -> 'EC.Element':
     return self.O
 
-  def plus(self, a, b):
+  def plus(self, a: 'EC.Element', b: Group.Element) -> 'EC.Element':
     # Implemented according to
     # https://www.math.brown.edu/~jhs/Presentations/WyomingEllipticCurve.pdf
     f = self.field
@@ -75,37 +77,37 @@ class EC(base.Group):
         f.plus(f.mul(lmbd, f.plus(a.x, b.x)),
                f.plus(vu, f.mul(lmbd2, lmbd)).plusInv()))
 
-  def __repr__(self):
+  def __repr__(self) -> str:
     return "EC: x^3 + %r x + %r" % (self.A, self.B)
 
-  class Element(base.Group.Element):
+  class Element(Group.Element):
     """Element in an Elliptic Curve."""
 
-    def __init__(self, ec, x, y):
+    def __init__(self, ec: 'EC', x: 'Field.Element', y: 'Field.Element'):
       # FIXME, verify that we are on the curve here.
       super(EC.Element, self).__init__(ec)
       self.field = ec
       self.x = x
       self.y = y
 
-    def plusInv(self):
+    def plusInv(self) -> 'EC.Element':
       # Check this. I think that it's just and inversion of y.
       if self.isPlusID():
         return self
       return self.field.Element(self.field, self.x, self.y.plusInv())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
       return "ECElement: %(x)r %(y)r" % {'x': self.x, 'y': self.y}
 
-    def __eq__(self, a):
+    def __eq__(self, a) -> str:
       return type(self) == type(
           a) and self.field == a.field and self.x == a.x and self.y == a.y
 
-    def __hash__(self):
+    def __hash__(self) -> int:
       return hash((self.x, self.y))
 
 
-class ECSubfield(base.Group):
+class ECSubfield(Group):
 
   def __init__(self, ec, g, order):
     self.ec = ec

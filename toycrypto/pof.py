@@ -1,6 +1,7 @@
 # Remove Field super-class as polynomials don't form a field.
 from toycrypto.base import *
 from functools import reduce
+from typing import Union, Dict, List, Any, Tuple
 
 
 class POF(Field):
@@ -9,17 +10,21 @@ class POF(Field):
   POF=PolynomialOverField
   """
 
-  def __init__(self, field):
+  def __init__(self, field: Field):
     super(POF, self).__init__()
     self.field = field
 
-  def plus(self, a, b):
+  def plus(self, a: Group.Element, b: Group.Element) -> 'POF.Element':
+    assert isinstance(a, POF.Element)
+    assert isinstance(b, POF.Element)
     newp = a.clone()
     for i in b.nonZeroCoefficients():
       newp.addToCoefficient(i, b.getCoefficient(i))
     return newp
 
-  def mul(self, a, b):
+  def mul(self, a: Field.Element, b: Field.Element) -> 'POF.Element':
+    assert isinstance(a, POF.Element)
+    assert isinstance(b, POF.Element)
     # Get new result polynomial with all zero coefficients.
     newp = self.plusID()
     for k1 in a.nonZeroCoefficients():
@@ -28,7 +33,8 @@ class POF(Field):
             k1 + k2, self.field.mul(a.getCoefficient(k1), b.getCoefficient(k2)))
     return newp
 
-  def longDiv(self, dividend, divisor):
+  def longDiv(self, dividend: 'POF.Element',
+              divisor: 'POF.Element') -> Tuple['POF.Element', 'POF.Element']:
     """Divides dividend by divisor."""
 
     # Divides
@@ -68,6 +74,17 @@ class POF(Field):
     while reminder.getDegree(
     ) is not None and reminder.getDegree() >= divisor.getDegree():
       xtimes = reminder.getDegree() - divisor.getDegree()
+
+      #while True:
+      #  rem_deg = reminder.getDegree()
+      #  if rem_deg is None:
+      #    break
+      #  assert isinstance(rem_deg, int)
+      #  div_deg = divisor.getDegree()
+      #  assert isinstance(div_deg, int)
+      #  if rem_deg >= div_deg:
+      #    break
+      #  xtimes = rem_deg - div_deg
       q = self.field.mul(
           divisor.getCoefficient(divisor.getDegree()).mulInv(),
           reminder.getCoefficient(reminder.getDegree()))
@@ -75,33 +92,33 @@ class POF(Field):
       quotient.setCoefficient(xtimes, q)
       for k in divisor.nonZeroCoefficients():
         # Subtract shifted divisor polynomial
-        reminder.addToCoefficient(
-            k + xtimes,
-            self.field.mul(divisor.getCoefficient(k), q).plusInv())
+        pol = self.field.mul(divisor.getCoefficient(k), q).plusInv()
+        assert isinstance(pol, Field.Element)
+        reminder.addToCoefficient(k + xtimes, pol)
     return (quotient, reminder)
 
-  def plusID(self):
+  def plusID(self) -> 'POF.Element':
     return self.make([])
 
-  def mulID(self):
+  def mulID(self) -> 'POF.Element':
     return self.make([self.field.mulID()])
 
-  def make(self, x):
+  def make(self, x: Union[Dict[int, int], int, List[int]]) -> 'POF.Element':
 
-    def makeFromDict(d):
+    def makeFromDict(d: Dict[int, int]) -> 'POF.Element':
       pofi = self.Element(self)
       for (k, v) in d.items():
         pofi.setCoefficient(k, self.field.make(v))
       return pofi
 
-    def makeFromList(lst):
+    def makeFromList(lst: List[int]) -> 'POF.Element':
       """Create polynomial from field coefficient list."""
       pofi = self.Element(self)
       for i in range(0, len(lst)):
         pofi.setCoefficient(i, self.field.make(lst[i]))
       return pofi
 
-    def makeFromInt(i):
+    def makeFromInt(i: int) -> 'POF.Element':
       res = self.Element(self)
       n = 0
       while i:
@@ -111,59 +128,67 @@ class POF(Field):
       return res
 
     if type(x) == int:
+      assert isinstance(x, int)
       return makeFromInt(x)
     if type(x) == list:
+      assert isinstance(x, list)
       return makeFromList(x)
     if type(x) == dict:
+      assert isinstance(x, dict)
       return makeFromDict(x)
     raise ValueError("Unknown object to make from.")
 
-  def __eq__(self, other):
-    return type(self) == type(other) and self.field == other.field
+  def __eq__(self, other: object) -> bool:
+    # TODO: Check all __eq__ for proper type mismatch handling
+    assert isinstance(other, POF)
+    return self.field == other.field
 
-  def __hash__(self):
+  def __hash__(self) -> int:
     return hash(self.field)
 
   class Element(Field.Element):
 
-    def __init__(self, pof):
+    def __init__(self, pof: 'POF'):
       super(POF.Element, self).__init__(pof)
       self.pof = pof
       self.c = {}
 
-    def setCoefficient(self, n, c):
+    def setCoefficient(self, n: int, e: 'Field.Element') -> 'POF.Element':
       """Sets coefficient of x^n."""
-      if c.isPlusID():
+      if e.isPlusID():
         if n in self.c:
           self.c.pop(n)
       else:
-        self.c[n] = c
+        self.c[n] = e
       return self
 
-    def getCoefficient(self, n):
-      return self.c.get(n, self.pof.field.plusID())
+    def getCoefficient(self, n: int) -> 'Field.Element':
+      default = self.pof.field.plusID()
+      assert isinstance(default, Field.Element)
+      return self.c.get(n, default)
 
-    def addToCoefficient(self, n, i):
-      return self.setCoefficient(n,
-                                 self.pof.field.plus(self.getCoefficient(n), i))
+    def addToCoefficient(self, n: int, elem: 'Field.Element') -> 'POF.Element':
+      added = self.pof.field.plus(self.getCoefficient(n), elem)
+      assert isinstance(added, Field.Element)
+      return self.setCoefficient(n, added)
 
-    def getDegree(self):
+    def getDegree(self) -> Union[None, int]:
       keys = self.c.keys()
       if keys:
         return max(keys)
       else:
         return None
 
-    def nonZeroCoefficients(self):
+    def nonZeroCoefficients(self) -> List[int]:
       return self.c.keys()
 
-    def plusInv(self):
+    def plusInv(self) -> 'POF.Element':
       return self.pof.make(dict((k, v.plusInv()) for k, v in self.c.items()))
 
-    def __str__(self):
+    def __str__(self) -> str:
       return self.__repr__()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
       es = ""
       keys = self.c.keys()
       for k in sorted(keys):
@@ -181,31 +206,33 @@ class POF(Field):
         # Remove trailing plus
         return es[:-3]
 
-    def clone(self):
+    def clone(self) -> 'POF.Element':
       clone = self.pof.plusID()
       for i in self.nonZeroCoefficients():
         clone.setCoefficient(i, self.getCoefficient(i).clone())
       return clone
 
-    def xtime(self):
+    def xtime(self) -> 'POF.Element':
       # Shift all coefficients higher by one
       return self.pof.make(dict((k + 1, v) for k, v in self.c.items()))
 
-    def __eq__(self, other):
-      return type(self) == type(
-          other) and self.pof == other.pof and self.c == other.c
+    def __eq__(self, other: object) -> bool:
+      if type(other) != type(self):
+        return False
+      assert isinstance(other, POF.Element)
+      return self.pof == other.pof and self.c == other.c
 
-    def toEL(self):
+    def toEL(self) -> List[Field.Element]:
       """Get coefficient list in underlying field from polynomial."""
       return [self.getCoefficient(i) for i in range(0, self.getDegree() + 1)]
 
-    def __int__(self):
+    def __int__(self) -> int:
       res = 0
       for i in range(self.getDegree() + 1, 0):
-        res += self.getCoefficient(i)
+        res += int(self.getCoefficient(i))
         res *= self.field.getOrder()
       return res
 
-    def __hash__(self):
+    def __hash__(self) -> int:
       return reduce(lambda x, h: hash((x, h)), sorted(self.c.items()),
                     hash(self.pof))

@@ -1,11 +1,12 @@
 import hashlib
 import binascii
-from typing import TypeVar, Generic, Callable
+from typing import TypeVar, Generic, Callable, Tuple
 
 T = TypeVar('T')
+S = TypeVar('S')
 
 
-def opN(self: T, n: int, neutral: T, op: Callable[[T, T], T]) -> T:
+def opN(self: S, n: int, neutral: S, op: Callable[[S, S], S]) -> S:
   """Applies op(self, op(self, ... op(self, neutral))) n-times"""
 
   # Assuming a binary operator "op", we create the operator lambda a: op1(self, a). Then we apply
@@ -27,59 +28,65 @@ def opN(self: T, n: int, neutral: T, op: Callable[[T, T], T]) -> T:
   return res
 
 
-class Base(object):
+class Group(Generic[T]):
 
-  def __repr__(self) -> str:
+  def plusID(self) -> T:
     raise NotImplementedError
 
-  def __eq__(self, other: object) -> bool:
+  def plus(self, a: T, b: T) -> T:
     raise NotImplementedError
 
+  class Element(object):
 
-class Group(Base):
-
-  def plusID(self) -> 'Group.Element':
-    raise NotImplementedError
-
-  def plus(self, a: 'Group.Element', b: 'Group.Element') -> 'Group.Element':
-    raise NotImplementedError
-
-  class Element(Base):
-
-    def __init__(self, group: 'Group'):
+    def __init__(self, group: 'Group[T]'):
       self.group = group
+
+    def clone(self) -> T:
+      raise NotImplementedError
 
     def isPlusID(self) -> bool:
       return self == self.group.plusID()
 
-    def scalarMul(self, scalar: int) -> 'Group.Element':
+    def scalarMul(self, scalar: int) -> T:
       """Scalar multiplication"""
       return opN(self, scalar, self.group.plusID(), self.group.plus)
+
+    def plusInv(self) -> T:
+      raise NotImplementedError
 
     def __eq__(self, other: object) -> bool:
       raise NotImplementedError
 
 
-class Field(Group):
+class Field(Group[T]):
 
-  def mulID(self) -> 'Field.Element':
+  def mulID(self) -> T:
     raise NotImplementedError
 
-  def mul(self, a: 'Field.Element', b: 'Field.Element') -> 'Field.Element':
+  def mul(self, a: T, b: T) -> T:
     raise NotImplementedError
 
-  def longDiv(self, a: 'Field.Element', b: 'Field.Element') -> 'Field.Element':
+  def longDiv(self, a: T, b: T) -> Tuple[T, T]:
+    raise NotImplementedError
+
+  def make(self, i: int) -> T:
+    raise NotImplementedError
+
+  def enum(self, i: int) -> Tuple[T, int]:
     raise NotImplementedError
 
   class Element(Group.Element):
 
-    def __init__(self, field: 'Field'):
+    def __init__(self, field: 'Field[T]'):
       super(Field.Element, self).__init__(field)
       self.field = field
 
     def isMulID(self) -> bool:
       return self == self.field.mulID()
 
-    def scalarPow(self, scalar: int) -> 'Field.Element':
+    def mulInv(self) -> T:
+      raise NotImplementedError
+
+    def scalarPow(self, scalar: int) -> T:
       """Scalar power"""
       return opN(self, scalar, self.field.mulID(), self.field.mul)

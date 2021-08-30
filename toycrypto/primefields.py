@@ -2,7 +2,7 @@ from toycrypto.base import *
 from typing import Any, Union, Tuple
 
 
-class Z(Field):
+class Z(Field['Z.Element']):
   """Implementation of the mathemical set Z/nZ."""
 
   def __init__(self, order: int):
@@ -15,9 +15,7 @@ class Z(Field):
   def plusID(self) -> 'Z.Element':
     return self.Element(0, self)
 
-  def plus(self, a: Group.Element, b: Group.Element) -> 'Z.Element':
-    assert isinstance(a, Z.Element)
-    assert isinstance(b, Z.Element)
+  def plus(self, a: 'Z.Element', b: 'Z.Element') -> 'Z.Element':
     if a.z_field != b.z_field:
       raise ValueError('Trying to add ZElements from different Z classes')
 
@@ -26,9 +24,7 @@ class Z(Field):
   def mulID(self) -> 'Z.Element':
     return self.Element(1, self)
 
-  def mul(self, a: 'Field.Element', b: 'Field.Element') -> 'Z.Element':
-    assert isinstance(a, Z.Element)
-    assert isinstance(b, Z.Element)
+  def mul(self, a: 'Z.Element', b: 'Z.Element') -> 'Z.Element':
     if a.z_field != b.z_field:
       raise ValueError('Trying to add ZElements from different Z classes')
 
@@ -96,13 +92,15 @@ class Z(Field):
       return self.z_field.Element(self.value, self.z_field)
 
     def __eq__(self, a: object) -> bool:
+      if not isinstance(a, Z.Element):
+        return False
       assert isinstance(a, Z.Element)
       return self.z_field == a.z_field and self.value == a.value
 
     def __int__(self) -> int:
       return self.value
 
-    def sqrt(self) -> Union[None, Z.Element]:
+    def sqrt(self) -> Union[None, 'Z.Element']:
       if self.z_field.order % 4 == 3:
         # The x^(p+1)/4 = x^2 trick seems to work for fields that have a p+1 divisible by 4.
         # FIXME: Find out why.
